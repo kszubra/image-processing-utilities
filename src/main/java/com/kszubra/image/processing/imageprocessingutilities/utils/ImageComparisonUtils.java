@@ -1,11 +1,16 @@
 package com.kszubra.image.processing.imageprocessingutilities.utils;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.kszubra.image.processing.imageprocessingutilities.clustering.ClusterRecord;
+
 public class ImageComparisonUtils {
+
     public static String getImageCode(BufferedImage image, double toleranceLevel) {
         StringBuilder sb = new StringBuilder();
         Integer previousRgb = null;
@@ -20,7 +25,7 @@ public class ImageComparisonUtils {
                     colorCodes.put(String.valueOf(image.getRGB(x, y)), previousColorCode);
                     sb.append(previousColorCode);
                 } else {
-                    if (ComparisonUtils.isDifferentPixels(image.getRGB(x, y), previousRgb, toleranceLevel)) {
+                    if (isDifferentPixels(image.getRGB(x, y), previousRgb, toleranceLevel)) {
                         if(colorCodes.containsKey(String.valueOf(image.getRGB(x,y)))) {
                             previousRgb = image.getRGB(x,y);
                             sb.append(previousColorCode);
@@ -46,13 +51,29 @@ public class ImageComparisonUtils {
         int[][] matrix = new int[base.getHeight()][base.getWidth()];
         for (int y = 0; y < base.getHeight(); y++) {
             for (int x = 0; x < base.getWidth(); x++) {
-                if (ComparisonUtils.isDifferentPixels(base.getRGB(x, y), possiblyChanged.getRGB(x, y), toleranceLevel)) {
+                if (isDifferentPixels(base.getRGB(x, y), possiblyChanged.getRGB(x, y), toleranceLevel)) {
                     matrix[y][x] = 1;
                     countOfDifferentPixels++;
                 }
             }
         }
         return matrix;
+    }
+
+    public static List<ClusterRecord> getClusterRecords(BufferedImage base, BufferedImage possiblyChanged, double toleranceLevel) {
+        long countOfDifferentPixels = 0;
+        List<ClusterRecord> records = new ArrayList<>();
+
+        for (int y = 0; y < base.getHeight(); y++) {
+            for (int x = 0; x < base.getWidth(); x++) {
+                if (isDifferentPixels(base.getRGB(x, y), possiblyChanged.getRGB(x, y), toleranceLevel)) {
+                    countOfDifferentPixels++;
+                    records.add(new ClusterRecord(String.format("Difference_%s", countOfDifferentPixels), Map.of("x", Double.valueOf(String.valueOf(x)), "y",  Double.valueOf(String.valueOf(y)))));
+                }
+            }
+        }
+
+        return records;
     }
 
     public static boolean isDifferentPixels(int expectedRgb, int actualRgb, double toleranceLevel) {

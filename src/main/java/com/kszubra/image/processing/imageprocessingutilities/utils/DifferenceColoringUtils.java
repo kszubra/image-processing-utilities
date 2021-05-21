@@ -6,23 +6,24 @@ import java.io.File;
 import java.util.Objects;
 
 public class DifferenceColoringUtils {
+
     public void markPixels(BufferedImage base, BufferedImage possiblyChanged, File destination, double tolerance) {
         if (isImageSizesNotEqual(base, possiblyChanged)) {
             System.out.println("Not same sizes");
         } else {
-            int[][] differentPixels = ComparisonUtils.getChangedPixels(base, possiblyChanged, tolerance);
+            int[][] differentPixels = ImageComparisonUtils.getChangedPixels(base, possiblyChanged, tolerance);
 
             BufferedImage result = markDifferences(differentPixels, possiblyChanged);
 
             if (Objects.nonNull(destination)) {
-                ImageComparisonUtil.saveImage(destination, result);
+                FileManagementUtils.saveImage(destination, result);
             }
 
         }
     }
 
     private BufferedImage markDifferences(int[][] differentPixels, BufferedImage possiblyChanged) {
-        BufferedImage result = ImageComparisonUtil.deepCopy(possiblyChanged);
+        BufferedImage result = FileManagementUtils.deepCopy(possiblyChanged);
         Graphics2D graphics = result.createGraphics();
         graphics.setColor(Color.RED);
         for (int y = 0; y < possiblyChanged.getHeight(); y++) {
