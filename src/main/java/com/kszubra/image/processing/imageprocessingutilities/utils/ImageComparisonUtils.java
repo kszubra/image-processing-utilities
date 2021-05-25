@@ -63,9 +63,9 @@ public class ImageComparisonUtils {
         return matrix;
     }
 
-    public static List<ClusterRectangle> getClusters(BufferedImage base, BufferedImage possiblyChanged, double toleranceLevel) {
+    public static List<ClusterRectangle> getClusters(BufferedImage base, BufferedImage possiblyChanged, double toleranceLevel, int numberOfClusters) {
         List<ClusterRecord> records = getClusterRecords(base, possiblyChanged, toleranceLevel);
-        return KMeansClusterService.generateClusters(records).entrySet().stream()
+        return KMeansClusterService.generateClusters(records, numberOfClusters).entrySet().stream()
                 .map(ImageComparisonUtils::getRectangle)
                 .collect(Collectors.toList());
 

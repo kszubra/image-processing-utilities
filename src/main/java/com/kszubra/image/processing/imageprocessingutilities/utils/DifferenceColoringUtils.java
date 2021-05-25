@@ -24,12 +24,12 @@ public class DifferenceColoringUtils {
         }
     }
 
-    public void markRectangles(BufferedImage base, BufferedImage possiblyChanged, File destination, double tolerance) {
+    public void markRectangles(BufferedImage base, BufferedImage possiblyChanged, File destination, double tolerance, int numberOfClusters) {
         if (isImageSizesNotEqual(base, possiblyChanged)) {
             System.out.println("Not same sizes");
         } else {
 
-            List<ClusterRectangle> rectangles = ImageComparisonUtils.getClusters(base, possiblyChanged, tolerance);
+            List<ClusterRectangle> rectangles = ImageComparisonUtils.getClusters(base, possiblyChanged, tolerance, numberOfClusters);
             BufferedImage result = drawRectangles(rectangles, possiblyChanged);
 
             if (Objects.nonNull(destination)) {

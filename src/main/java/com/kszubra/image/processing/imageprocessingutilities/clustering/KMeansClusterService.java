@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class KMeansClusterService {
 
-    public static Map<Centroid, List<ClusterRecord>> generateClusters(List<ClusterRecord> records) {
-        Map<Centroid, List<ClusterRecord>> clusters = KMeans.fit(records, 7, new EuclideanDistance(), 1000);
+    public static Map<Centroid, List<ClusterRecord>> generateClusters(List<ClusterRecord> records, int numberOfClusters) {
+        Map<Centroid, List<ClusterRecord>> clusters = KMeans.fit(records, numberOfClusters, new EuclideanDistance(), 1000);
         clusters.forEach((key, value) -> {
             System.out.println("-------------------------- CLUSTER ----------------------------");
 
