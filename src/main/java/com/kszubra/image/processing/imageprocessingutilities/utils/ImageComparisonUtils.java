@@ -6,8 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import com.kszubra.image.processing.imageprocessingutilities.clustering.Centroid;
 import com.kszubra.image.processing.imageprocessingutilities.clustering.ClusterRecord;
+import com.kszubra.image.processing.imageprocessingutilities.clustering.KMeansClusterService;
 
 public class ImageComparisonUtils {
 
@@ -58,6 +61,44 @@ public class ImageComparisonUtils {
             }
         }
         return matrix;
+    }
+
+    public static List<ClusterRectangle> getClusters(BufferedImage base, BufferedImage possiblyChanged, double toleranceLevel) {
+        List<ClusterRecord> records = getClusterRecords(base, possiblyChanged, toleranceLevel);
+        return KMeansClusterService.generateClusters(records).entrySet().stream()
+                .map(ImageComparisonUtils::getRectangle)
+                .collect(Collectors.toList());
+
+    }
+
+    private static ClusterRectangle getRectangle(Map.Entry<Centroid, List<ClusterRecord>> entry) {
+        double minX = entry.getValue().stream()
+                .map(record -> record.getFeatures().get("x"))
+                .min(Double::compareTo)
+                .get();
+        double minY = entry.getValue().stream()
+                .map(record -> record.getFeatures().get("y"))
+                .min(Double::compareTo)
+                .get();
+
+        double maxX = entry.getValue().stream()
+                .map(record -> record.getFeatures().get("x"))
+                .max(Double::compareTo)
+                .get();
+        double maxY = entry.getValue().stream()
+                .map(record -> record.getFeatures().get("y"))
+                .max(Double::compareTo)
+                .get();
+        double width = maxX - minX;
+        double height = maxY - minY;
+
+        return ClusterRectangle.builder()
+                .centroid(entry.getKey())
+                .x(minX)
+                .y(minY)
+                .height(height)
+                .width(width)
+                .build();
     }
 
     public static List<ClusterRecord> getClusterRecords(BufferedImage base, BufferedImage possiblyChanged, double toleranceLevel) {
